@@ -1,23 +1,23 @@
 package com.flightapp.bookingservice.service;
 
 import com.flightapp.bookingservice.messaging.BookingEvent;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class EmailService {
 
     private static final Logger log = LoggerFactory.getLogger(EmailService.class);
-
-    @Autowired
-    private JavaMailSender mailSender;
+    private final JavaMailSender mailSender;
 
     public void sendBookingEmail(BookingEvent event) {
         String toEmail = event.getUserEmail();
+
         if (toEmail == null || !toEmail.contains("@")) {
             log.warn("Invalid email address provided: {}. Skipping email.", toEmail);
             return;
@@ -35,7 +35,6 @@ public class EmailService {
                 Dear %s,
                 
                 Your flight booking is confirmed!
-                
                 PNR: %s
                 Flight ID: %s
                 Seats: %d
@@ -43,15 +42,9 @@ public class EmailService {
                 
                 Have a safe journey!
                 """, 
-                event.getUserName(), 
-                event.getPnr(), 
-                event.getFlightId(), 
-                event.getNumberOfSeats(), 
-                event.getTotalPrice()
-            );
+                event.getUserName(), event.getPnr(), event.getFlightId(), event.getNumberOfSeats(), event.getTotalPrice());
 
             message.setText(body);
-
             mailSender.send(message);
             log.info("Email sent successfully to {}", toEmail);
 

@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -19,9 +20,11 @@ public class BookingListenerTest {
     private BookingListener bookingListener;
 
     @Test
-    void testHandleEvent() {
+    void testHandleBookingEvent() {
         BookingEvent event = new BookingEvent();
-        bookingListener.handleBookingEvent(event);
+        event.setPnr("PNR123");
+        assertDoesNotThrow(() -> bookingListener.handleBookingEvent(event));
+
         verify(emailService).sendBookingEmail(event);
     }
 }

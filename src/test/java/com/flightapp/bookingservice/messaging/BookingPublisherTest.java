@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
@@ -25,8 +25,7 @@ public class BookingPublisherTest {
     void testPublish() {
         BookingEvent event = new BookingEvent();
         event.setPnr("PNR123");
-
-        bookingPublisher.publishBookingConfirmation(event);
+        assertDoesNotThrow(() -> bookingPublisher.publishBookingConfirmation(event));
 
         verify(rabbitTemplate).convertAndSend(
                 eq(RabbitMQConfig.BOOKING_EXCHANGE),
@@ -38,6 +37,6 @@ public class BookingPublisherTest {
     @Test
     void testPublish_NoRabbit() {
         BookingPublisher pub = new BookingPublisher();
-        pub.publishBookingConfirmation(new BookingEvent());
+        assertDoesNotThrow(() -> pub.publishBookingConfirmation(new BookingEvent()));
     }
 }
